@@ -1,14 +1,6 @@
 Set-Location ".\build"
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-function GenerateSha([string]$filePath,[string]$artifactsPath, [string]$shaFileName)
-{
-   $sha = (Get-FileHash $filePath).Hash.ToLower()
-   $shaPath = Join-Path $artifactsPath "$shaFileName.sha"
-   Out-File -InputObject $sha -Encoding ascii -FilePath $shaPath
-   LogSuccess "Generating hash for $filePath"
-}
-
 function Unzip([string]$zipfilePath, [string]$outputpath) {
     try {
         [System.IO.Compression.ZipFile]::ExtractToDirectory($zipfilePath, $outputpath)
@@ -129,13 +121,6 @@ try
        $zipPath = $zipPath + ".zip"
        $directoryPath = $directory.FullName
        Zip $directoryPath $zipPath 
-    }
-
-
-    $zipFiles  = Get-ChildItem "$artifactsPath\*.zip" -File 
-    foreach($zipFile in $zipFiles)
-    {
-       GenerateSha $zipFile.FullName $artifactsPath $zipFile.Name
     }
 }
 catch {
